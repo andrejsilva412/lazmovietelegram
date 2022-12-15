@@ -1,65 +1,49 @@
 object frmMain: TfrmMain
-  Left = 202
-  Height = 484
-  Top = 109
-  Width = 734
+  Left = 272
+  Height = 455
+  Top = 113
+  Width = 689
   Caption = 'Laz Movie Telegram'
-  ClientHeight = 484
-  ClientWidth = 734
+  ClientHeight = 455
+  ClientWidth = 689
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnShow = FormShow
-  SessionProperties = 'cboIntervalo.ItemIndex;edToken.Text;Memo1.Height;Memo1.Width;Memo2.Height;Memo2.Width'
+  SessionProperties = 'cboIntervalo.ItemIndex;edToken.Text'
   LCLVersion = '2.2.2.0'
   object PageControl1: TPageControl
     Left = 0
-    Height = 484
+    Height = 455
     Top = 0
-    Width = 734
+    Width = 689
     ActivePage = TabSheet1
     Align = alClient
     TabIndex = 0
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'Principal'
-      ClientHeight = 456
-      ClientWidth = 726
+      ClientHeight = 427
+      ClientWidth = 681
       object Memo1: TMemo
         Left = 0
-        Height = 456
+        Height = 427
         Top = 0
-        Width = 461
-        Align = alLeft
+        Width = 681
+        Align = alClient
         Lines.Strings = (
           'Memo1'
         )
         TabOrder = 0
       end
-      object Splitter1: TSplitter
-        Left = 461
-        Height = 456
-        Top = 0
-        Width = 5
-      end
-      object Memo2: TMemo
-        Left = 466
-        Height = 456
-        Top = 0
-        Width = 260
-        Align = alClient
-        Lines.Strings = (
-          'Memo2'
-        )
-        TabOrder = 2
-      end
     end
     object TabSheet2: TTabSheet
       Caption = 'Configurações'
-      ClientHeight = 456
-      ClientWidth = 726
+      ClientHeight = 427
+      ClientWidth = 681
       object Label1: TLabel
         Left = 8
         Height = 15
-        Top = 16
+        Top = 8
         Width = 31
         Caption = 'Token'
         ParentColor = False
@@ -67,7 +51,7 @@ object frmMain: TfrmMain
       object edToken: TEdit
         Left = 8
         Height = 23
-        Top = 32
+        Top = 24
         Width = 568
         TabOrder = 0
         Text = 'edToken'
@@ -77,9 +61,9 @@ object frmMain: TfrmMain
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = TabSheet2
         AnchorSideBottom.Side = asrBottom
-        Left = 659
+        Left = 614
         Height = 25
-        Top = 427
+        Top = 398
         Width = 57
         Anchors = [akRight, akBottom]
         AutoSize = True
@@ -92,7 +76,7 @@ object frmMain: TfrmMain
       object Label2: TLabel
         Left = 8
         Height = 15
-        Top = 72
+        Top = 56
         Width = 138
         Caption = 'Intervalo entre mensagem'
         ParentColor = False
@@ -100,7 +84,7 @@ object frmMain: TfrmMain
       object cboIntervalo: TComboBox
         Left = 8
         Height = 23
-        Top = 88
+        Top = 72
         Width = 100
         ItemHeight = 15
         ItemIndex = 3
@@ -116,6 +100,48 @@ object frmMain: TfrmMain
         TabOrder = 2
         Text = '1 hora'
       end
+      object Label3: TLabel
+        Left = 8
+        Height = 15
+        Top = 104
+        Width = 65
+        Caption = 'Pasta Filmes'
+        ParentColor = False
+      end
+      object DirectoryEdit1: TDirectoryEdit
+        Left = 8
+        Height = 23
+        Top = 120
+        Width = 327
+        Directory = 'DirectoryEdit1'
+        ShowHidden = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        MaxLength = 0
+        TabOrder = 3
+        Text = 'DirectoryEdit1'
+      end
+      object Label4: TLabel
+        Left = 8
+        Height = 15
+        Top = 152
+        Width = 61
+        Caption = 'Pasta Séries'
+        ParentColor = False
+      end
+      object DirectoryEdit2: TDirectoryEdit
+        Left = 8
+        Height = 23
+        Top = 168
+        Width = 327
+        Directory = 'DirectoryEdit2'
+        ShowHidden = False
+        ButtonWidth = 23
+        NumGlyphs = 1
+        MaxLength = 0
+        TabOrder = 4
+        Text = 'DirectoryEdit2'
+      end
     end
   end
   object JSONPropStorage1: TJSONPropStorage
@@ -126,6 +152,35 @@ object frmMain: TfrmMain
   object tmrIntervalo: TTimer
     Enabled = False
     OnTimer = tmrIntervaloTimer
-    Left = 448
+    Left = 456
+  end
+  object tmrHora: TTimer
+    Enabled = False
+    OnTimer = tmrHoraTimer
+    Left = 536
+  end
+  object SQLite3Connection1: TSQLite3Connection
+    Connected = False
+    LoginPrompt = False
+    KeepConnection = False
+    Transaction = SQLTransaction1
+    AlwaysUseBigint = False
+    Left = 352
+    Top = 80
+  end
+  object SQLTransaction1: TSQLTransaction
+    Active = False
+    Database = SQLite3Connection1
+    Left = 456
+    Top = 80
+  end
+  object SQLQuery1: TSQLQuery
+    FieldDefs = <>
+    Database = SQLite3Connection1
+    Transaction = SQLTransaction1
+    Params = <>
+    Macros = <>
+    Left = 536
+    Top = 80
   end
 end

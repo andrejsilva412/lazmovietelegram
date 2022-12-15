@@ -6,11 +6,22 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls,
-  TypInfo, JSONPropStorage, ExtCtrls, tgsendertypes, tgtypes;
+  TypInfo, SQLite3Conn, SQLDB, JSONPropStorage, ExtCtrls, EditBtn,
+  tgsendertypes, tgtypes;
 
 type
 
   TIntervalo = (int5min, int10min, int30min, int1Hora, int2Hora, int5Hora);
+
+type
+
+  { TMyBot }
+
+  TMyBot = class(TTelegramSender)
+    protected
+      procedure InfoMessage(const Msg: String); override;
+      procedure ErrorMessage(const Msg: String); override;
+  end;
 
 type
 
@@ -19,31 +30,38 @@ type
   TfrmMain = class(TForm)
     Button1: TButton;
     cboIntervalo: TComboBox;
+    DirectoryEdit1: TDirectoryEdit;
+    DirectoryEdit2: TDirectoryEdit;
     edToken: TEdit;
     JSONPropStorage1: TJSONPropStorage;
     Label1: TLabel;
     Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
     Memo1: TMemo;
-    Memo2: TMemo;
     PageControl1: TPageControl;
-    Splitter1: TSplitter;
+    SQLite3Connection1: TSQLite3Connection;
+    SQLQuery1: TSQLQuery;
+    SQLTransaction1: TSQLTransaction;
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
+    tmrHora: TTimer;
     tmrIntervalo: TTimer;
     procedure Button1Click(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure tmrHoraTimer(Sender: TObject);
     procedure tmrIntervaloTimer(Sender: TObject);
   private
-    FBot: TTelegramSender;
-    procedure BotReceiveUpdate(ASender: TObject; AnUpdate: TTelegramUpdateObj);
-    procedure BotStartCmd(ASender: TObject; const ACommand: String;
-      AMessage: TTelegramMessageObj);
+    FToken: String;
+    FData: TDateTime;
+    procedure Search;
+    procedure SearchMovie;
+    procedure SearchTV;
+    procedure InitDataBase;
+    procedure CloseDataBase;
     function TimerIntervaloToInteger(aIntervalo: TIntervalo): Integer;
-    procedure BotSendMessage(ASender: TObject; const ACommand: String;
-      AMessage: TTelegramMessageObj);
-    procedure Notifica;
-    procedure UpdateDelayed(Data: PtrInt);
   public
 
   end;
@@ -55,13 +73,30 @@ implementation
 
 {$R *.lfm}
 
+{ TMyBot }
+
+procedure TMyBot.InfoMessage(const Msg: String);
+begin
+  inherited InfoMessage(Msg);
+  frmMain.Memo1.Lines.Add('Info: ' + Msg);
+end;
+
+procedure TMyBot.ErrorMessage(const Msg: String);
+begin
+  inherited ErrorMessage(Msg);
+  frmMain.Memo1.Lines.Add('Error: ' + Msg);
+end;
+
 { TfrmMain }
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 var
   Intervalo: TIntervalo;
 begin
+  FData := Date;
   edToken.Clear;
+  DirectoryEdit1.Text := '';
+  DirectoryEdit2.Text := '';
   JSONPropStorage1.JSONFileName := 'settings.json';
   JSONPropStorage1.Active := true;
   cboIntervalo.Items.Clear;
@@ -69,46 +104,94 @@ begin
     cboIntervalo.Items.Add(
       GetEnumName(TypeInfo(TIntervalo), Integer(Intervalo)));
   Memo1.Clear;
-  Memo2.Clear;
-
   tmrIntervalo.Interval := 2000;
- // tmrIntervalo.Enabled := true;
-
-   FBot := TTelegramSender.Create('5964318731:AAGRx8n5EoLSgZSVqL7NodX5xwvXzGWyVYI');
-  FBot.CommandHandlers['/start'] := @BotStartCmd;
-  FBot.CommandHandlers['/sinc'] := @BotSendMessage;
-  FBot.OnReceiveUpdate   := @BotReceiveUpdate;
-  if (Application.Flags*[AppDoNotCallAsyncQueue]) = [] then
-    Application.QueueAsyncCall(@UpdateDelayed, 0);
-
-
+  tmrIntervalo.Enabled := true;
+  InitDataBase;
 end;
 
 procedure TfrmMain.FormShow(Sender: TObject);
-var
-  Token: String;
 begin
-  Token := edToken.Text;
+  FToken := edToken.Text;
+end;
 
-  if Token = '' then
+procedure TfrmMain.tmrHoraTimer(Sender: TObject);
+begin
+  if FData < Date then
   begin
-    ShowMessage('Token não informado.');
-    exit;
+    Memo1.Lines.Clear;
+    FData := Date;
   end;
-
-
-
 end;
 
 procedure TfrmMain.tmrIntervaloTimer(Sender: TObject);
 begin
   try
     tmrIntervalo.Enabled := false;
-    Notifica;
+    Search;
     tmrIntervalo.Enabled := true;
   except
     tmrIntervalo.Enabled := true;
   end;
+end;
+
+procedure TfrmMain.Search;
+begin
+  SearchMovie;
+  SearchTV;
+end;
+
+procedure TfrmMain.SearchMovie;
+var
+  SR: TSearchRec;
+begin
+
+
+
+end;
+
+procedure TfrmMain.SearchTV;
+begin
+
+end;
+
+procedure TfrmMain.InitDataBase;
+var
+  FCreateTable: Boolean;
+begin
+
+  FCreateTable := false;
+  SQLite3Connection1.DatabaseName := 'movie.db';
+  SQLite3Connection1.Open;
+  SQLQuery1.SQL.Clear;
+  SQLQuery1.SQL.Add('SELECT name FROM sqlite_master WHERE type=:type AND name=:name');
+  SQLQuery1.ParamByName('type').AsString := 'table';
+  SQLQuery1.ParamByName('name').AsString := 'movie';
+  SQLQuery1.Open;
+  FCreateTable := not SQLQuery1.IsEmpty;
+  SQLQuery1.Close;
+  if FCreateTable then
+  begin
+
+    CREATE TABLE [movie] (
+[id] INTEGER  NOT NULL PRIMARY KEY AUTOINCREMENT,
+[imdbid] VARCHAR(44)  UNIQUE NULL
+)
+
+
+
+CREATE UNIQUE INDEX [idximdbid] ON [movie](
+[imdbid]  DESC
+)
+
+  end;
+
+end;
+
+procedure TfrmMain.CloseDataBase;
+begin
+  SQLite3Connection1.CloseDataSets;
+  SQLite3Connection1.CloseTransactions;
+  SQLite3Connection1.Close();
 end;
 
 function TfrmMain.TimerIntervaloToInteger(aIntervalo: TIntervalo): Integer;
@@ -125,53 +208,14 @@ begin
 
 end;
 
-procedure TfrmMain.BotSendMessage(ASender: TObject; const ACommand: String;
-  AMessage: TTelegramMessageObj);
-begin
-  Memo2.Lines.Add(ACommand + ' FROM ' + AMessage.From.First_name);
-end;
-
-procedure TfrmMain.BotReceiveUpdate(ASender: TObject;
-  AnUpdate: TTelegramUpdateObj);
-begin
-  if Assigned(AnUpdate) then
-    Memo1.Lines.Add(AnUpdate.Message.AsString);
-end;
-
-procedure TfrmMain.BotStartCmd(ASender: TObject; const ACommand: String;
-  AMessage: TTelegramMessageObj);
-begin
-  Memo2.Lines.Add(ACommand + ' FROM ' + AMessage.From.First_name);
-end;
-
-procedure TfrmMain.Notifica;
-var
-  Token: String;
-begin
-                {
-  FBot := TTelegramSender.Create(Token);
-  try
-
-    if (Application.Flags*[AppDoNotCallAsyncQueue]) = [] then
-      Application.QueueAsyncCall(@UpdateDelayed, 0);
-
-  finally
-    FreeAndNil(FBot);
-  end;
-
-               }
-end;
-
-procedure TfrmMain.UpdateDelayed(Data: PtrInt);
-begin
-  FBot.getUpdates;
-  if (Application.Flags*[AppDoNotCallAsyncQueue]) = [] then
-     Application.QueueAsyncCall(@UpdateDelayed, 0);
-end;
-
 procedure TfrmMain.Button1Click(Sender: TObject);
 begin
   JSONPropStorage1.Save;
+end;
+
+procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  CloseDataBase;
 end;
 
 end.
