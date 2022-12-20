@@ -8,7 +8,6 @@ object frmMain: TfrmMain
   ClientWidth = 689
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
-  OnShow = FormShow
   SessionProperties = 'cboIntervalo.ItemIndex;DirectoryEdit1.Text;DirectoryEdit2.Text;edChatID.Text;edToken.Text;RxSwitch1.StateOn'
   LCLVersion = '2.2.2.0'
   object PageControl1: TPageControl

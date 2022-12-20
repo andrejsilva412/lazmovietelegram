@@ -53,7 +53,6 @@ type
     procedure Button1Click(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormCreate(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure RxSwitch1Click(Sender: TObject);
     procedure tmrHoraTimer(Sender: TObject);
     procedure tmrIntervaloTimer(Sender: TObject);
@@ -78,6 +77,9 @@ type
     procedure InfoMessage(const Msg: String);
     procedure ErrorMessage(const MSg: String);
   end;
+
+const
+  MAX_SEND = 5;
 
 var
   frmMain: TfrmMain;
@@ -118,14 +120,9 @@ begin
     cboIntervalo.Items.Add(
       GetEnumName(TypeInfo(TIntervalo), Integer(Intervalo)));
   Memo1.Clear;
-  tmrIntervalo.Interval := TimerIntervaloToInteger(int5min);
-  tmrIntervalo.Enabled := RxSwitchToBoolean(RxSwitch1);
+ // tmrIntervalo.Interval := TimerIntervaloToInteger(int5min);
+ // tmrIntervalo.Enabled := RxSwitchToBoolean(RxSwitch1);
   InitDataBase;
-end;
-
-procedure TfrmMain.FormShow(Sender: TObject);
-begin
-  LoadConfig;
 end;
 
 procedure TfrmMain.RxSwitch1Click(Sender: TObject);
@@ -164,7 +161,7 @@ procedure TfrmMain.SearchMovie;
 var
   Files: TStringList;
   i: Integer;
-  Str, imdbid, title: String;
+  Str, imdbid, title, ano, plot: String;
   XML: TXMLDocument;
   List: TDOMNodeList;
   Node: TDOMNode;
@@ -176,6 +173,8 @@ begin
     FindAllFiles(Files, DirectoryEdit1.Text, '*.*');
     for i := 0 to Files.Count -1 do
     begin
+      if i = MAX_SEND then
+        break;
       Str := Files[i];
       try
         ReadXMLFile(XML, Str);
@@ -185,8 +184,11 @@ begin
         SendDate := GetSendDate(imdbid);
         if SendDate = 0 then
         begin
-          title := GetContentNode('title', Node);
-          SendTelegramMessage(imdbid, 'Filme Adicionado: ' + title);
+          title := 'Filme adicionado: ' + GetContentNode('title', Node) + LineEnding;
+          ano := 'Ano de Lançamento: ' + GetContentNode('year', Node) + LineEnding;
+          plot := GetContentNode('plot', Node);
+          Str := title + ano + plot;
+          SendTelegramMessage(imdbid, str);
         end;
       except
         on E: Exception do
@@ -272,7 +274,8 @@ begin
 
   intervalo := TIntervalo(GetEnumValue(TypeInfo(TIntervalo), cboIntervalo.Items[cboIntervalo.ItemIndex]));
   tmrIntervalo.Enabled := false;
-  tmrIntervalo.Interval := TimerIntervaloToInteger(intervalo);
+//  tmrIntervalo.Interval := TimerIntervaloToInteger(intervalo);
+  tmrIntervalo.Interval := 2000;
   tmrIntervalo.Enabled := true;
 
 end;
@@ -281,12 +284,12 @@ function TfrmMain.TimerIntervaloToInteger(aIntervalo: TIntervalo): Integer;
 begin
 
   case aIntervalo of
-    int5min: Result  :=      5000;
-    int10min: Result :=     10000;
-    int30min: Result :=     60000;
-    int1Hora: Result :=   1800000;
-    int2Hora: Result :=   3600000;
-    int5Hora: Result :=   9000000;
+    int5min : Result :=      300000;
+    int10min: Result :=      600000;
+    int30min: Result :=     1800000;
+    int1Hora: Result :=    36000000;
+    int2Hora: Result :=    72000000;
+    int5Hora: Result :=   180000000;
   end;
 
 end;
