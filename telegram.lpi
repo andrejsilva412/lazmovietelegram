@@ -4,15 +4,15 @@
     <Version Value="12"/>
     <PathDelim Value="\"/>
     <General>
+      <Flags>
+        <MainUnitHasCreateFormStatements Value="False"/>
+        <MainUnitHasTitleStatement Value="False"/>
+        <MainUnitHasScaledStatement Value="False"/>
+      </Flags>
       <SessionStorage Value="InProjectDir"/>
-      <Title Value="lazmovietelegram"/>
-      <Scaled Value="True"/>
+      <Title Value="Telegram"/>
+      <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
-      <UseXPManifest Value="True"/>
-      <XPManifest>
-        <DpiAware Value="True"/>
-      </XPManifest>
-      <Icon Value="0"/>
     </General>
     <BuildModes>
       <Item Name="Default" Default="True"/>
@@ -26,29 +26,20 @@
     </RunParams>
     <RequiredPackages>
       <Item>
-        <PackageName Value="rxnew"/>
-      </Item>
-      <Item>
-        <PackageName Value="FCL"/>
+        <PackageName Value="SQLDBLaz"/>
       </Item>
       <Item>
         <PackageName Value="fptelegram"/>
       </Item>
-      <Item>
-        <PackageName Value="LCL"/>
-      </Item>
     </RequiredPackages>
     <Units>
       <Unit>
-        <Filename Value="lazmovietelegram.lpr"/>
+        <Filename Value="telegram.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="umain.pas"/>
+        <Filename Value="configuration.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="frmMain"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
       </Unit>
     </Units>
   </ProjectOptions>
@@ -56,7 +47,7 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="lazmovietelegram"/>
+      <Filename Value="telegram"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
@@ -64,13 +55,9 @@
     </SearchPaths>
     <Linking>
       <Debugging>
+        <GenerateDebugInfo Value="False"/>
         <DebugInfoType Value="dsDwarf3"/>
       </Debugging>
-      <Options>
-        <Win32>
-          <GraphicApplication Value="True"/>
-        </Win32>
-      </Options>
     </Linking>
   </CompilerOptions>
   <Debugging>

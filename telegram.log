@@ -1,0 +1,7 @@
+ [2022-12-21 15:35:15.088 Debug] Request for method "sendMessage": { "chat_id" : -614552180, "text" : "Received timer event 1 after 64 ticks. (Elapsed time: 01.016)", "disable_web_page_preview" : false }
+ [2022-12-21 15:35:18.658 Error] [HTTPPostJSON] EHTTPClient: Invalid protocol : "5964318731"
+ [2022-12-21 15:35:18.673 Debug] Request for method "sendMessage": { "chat_id" : -614552180, "text" : "Received timer event 2 after 1 ticks. (Elapsed time: 00.014)", "disable_web_page_preview" : false }
+ [2022-12-21 15:35:19.571 Error] [HTTPPostJSON] EHTTPClient: Invalid protocol : "5964318731"
+ [2022-12-21 15:35:19.580 Debug] Request for method "sendMessage": { "chat_id" : -614552180, "text" : "Received timer event 3 after 1 ticks. (Elapsed time: 00.008)", "disable_web_page_preview" : false }
+ [2022-12-21 15:35:20.380 Error] [HTTPPostJSON] EHTTPClient: Invalid protocol : "5964318731"
+ [2022-12-21 15:35:20.390 Debug] Request for method "sendMessage": { "chat_id" : -614552180, "text" : "Received timer event 4 after 1 ticks. (Elapsed time: 00.008)", "disable_web_page_preview" : false }
